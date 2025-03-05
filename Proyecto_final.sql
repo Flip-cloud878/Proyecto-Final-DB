@@ -543,6 +543,15 @@
       }
     },
     {
+      "cell_type": "markdown",
+      "source": [
+        "el llamado abajo es para el proyecto 1 con 18 parámetros"
+      ],
+      "metadata": {
+        "id": "hfnobpixYDe5"
+      }
+    },
+    {
       "cell_type": "code",
       "source": [
         "CALL crear_proyecto(\n",
@@ -575,11 +584,176 @@
     {
       "cell_type": "markdown",
       "source": [
+        "el llamado abajo es para agregar el proyecto 2 con los mismos 18 parámetros que acepta el procedimiento almacenado."
+      ],
+      "metadata": {
+        "id": "FKWwdgxKYL5K"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "CALL crear_proyecto(\n",
+        "    2, -- p_id_entidad (verifica que exista, ej.: id_entidad = 2)\n",
+        "    'Facultad de Ingeniería Ambiental', -- p_facultad_lider\n",
+        "    'Estudio de Impacto Ambiental para un tramo vial', -- p_objeto\n",
+        "    'Convocatoria pública de I+D', -- p_tipologia\n",
+        "    'Licitación pública nacional (convocatoria MinSalud 2019)', -- p_origen_proceso\n",
+        "    180000000, -- p_valor_cotizacion\n",
+        "    180000000, -- p_valor_proyecto_fce (valor contrato inicial)\n",
+        "    '2019-07-10', -- p_fecha_recepcion propuesta (asumida cercana presentación: 10 días antes de adjudicación)\n",
+        "    '2019-07-30', -- p_fecha_entrega propuesta aprobada (fecha adjudicación)\n",
+        "    '2019-08-05', -- p_fecha_inicio_ejecucion (asumida 5 días luego de firma contrato)\n",
+        "    '2020-04-30', -- p_fecha_fin_ejecucion (fecha real finalización con prórroga)\n",
+        "    170000000, -- p_valor_pagado (valor efectivamente recibido antes de liquidación)\n",
+        "    '50% anticipado, 50% al finalizar con plazo 30 días', -- p_condiciones_pago\n",
+        "    180000000, -- p_valor_contrato_total (presupuesto total aprobado)\n",
+        "    180000000, -- p_valor_ejecucion_fce (valor efectivamente ejecutado)\n",
+        "    '65-2020', -- p_res_liquidacion_no (resolución de liquidación)\n",
+        "    '2020-06-15', -- p_fecha_liquidacion_def\n",
+        "    'Liquidado' -- p_estado_liquidacion\n",
+        ");\n"
+      ],
+      "metadata": {
+        "id": "KCB5oQBgYTlD"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "ahora para el proyecto liquidad nº 3"
+      ],
+      "metadata": {
+        "id": "aLzRwfIock_k"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "CALL crear_proyecto(\n",
+        "    3, -- p_id_entidad (verifica que exista, por ejemplo, entidad 3)\n",
+        "    'Facultad de Ingeniería Eléctrica', -- p_facultad_lider\n",
+        "    'Investigación en Impacto Ambiental para un tramo vial', -- p_objeto\n",
+        "    'Convocatoria pública de I+D', -- p_tipologia\n",
+        "    'Convocatoria pública MinCiencias 2018 (propuestas de investigación competitivas)', -- p_origen_proceso\n",
+        "    300000000, -- p_valor_cotizacion\n",
+        "    300000000, -- p_valor_proyecto_fce (presupuesto inicial)\n",
+        "    '2018-07-10', -- p_fecha_recepcion (aproximado 20 días antes adjudicación)\n",
+        "    '2018-01-30', -- p_fecha_entrega (adjudicación)\n",
+        "    '2018-03-01', -- p_fecha_inicio_ejecucion\n",
+        "    '2020-06-30', -- p_fecha_fin_ejecucion (fecha real, extendida)\n",
+        "    300000000, -- p_valor_pagado (total recibido finalmente tras aprobaciones)\n",
+        "    '40% al inicio, 40% intermedio tras informe, 20% final aprobación', -- p_condiciones_pago\n",
+        "    300000000, -- p_valor_contrato_total (presupuesto original aprobado)\n",
+        "    300000000, -- p_valor_ejecucion_fce (valor efectivamente ejecutado tras adición)\n",
+        "    '198-2020', -- p_res_liquidacion_no (resolución liquidación)\n",
+        "    '2020-08-31', -- p_fecha_liquidacion_def\n",
+        "    'Liquidado' -- p_estado_liquidacion\n",
+        ");\n"
+      ],
+      "metadata": {
+        "id": "eq2SK6JPco0W"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "proyecto nº 4"
+      ],
+      "metadata": {
+        "id": "sqP_Pis1h6EH"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "CALL crear_proyecto(\n",
+        "    4, -- p_id_entidad (asegúrate que exista en tabla entidad)\n",
+        "    'Facultad de Arquitectura y Urbanismo', -- p_facultad_lider\n",
+        "    'Sistema GIS para Catastro Regional', -- p_objeto\n",
+        "    'Proyecto de servicio (Desarrollo e implementación de sistema)', -- p_tipologia\n",
+        "    'Licitación pública regional No. SPR-2020-45', -- p_origen_proceso\n",
+        "    250000000, -- p_valor_cotizacion\n",
+        "    250000000, -- p_valor_proyecto_fce (valor inicial contratado)\n",
+        "    '2020-12-05', -- p_fecha_recepcion propuesta\n",
+        "    '2021-01-05', -- p_fecha_entrega propuesta aprobada (fecha adjudicación)\n",
+        "    '2021-01-20', -- p_fecha_inicio_ejecucion\n",
+        "    '2021-12-31', -- p_fecha_fin_ejecucion (fecha real con retraso administrativo)\n",
+        "    247500000, -- p_valor_pagado (valor final recibido tras penalidad)\n",
+        "    'Pago trimestral contra entrega, plazo 45 días, último pago con penalidad 1%', -- p_condiciones_pago\n",
+        "    250000000, -- p_valor_contrato_total (valor total aprobado)\n",
+        "    250000000, -- p_valor_ejecucion_fce (valor ejecutado 100%)\n",
+        "    '110-2022', -- p_res_liquidacion_no (resolución liquidación)\n",
+        "    '2022-03-31', -- p_fecha_liquidacion_def\n",
+        "    'Liquidado' -- p_estado_liquidacion\n",
+        ");\n"
+      ],
+      "metadata": {
+        "id": "YSUMQFlMiA7Z"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "finalmente el último proyecto liquidado"
+      ],
+      "metadata": {
+        "id": "IfPL_2mMi_Qy"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "CALL crear_proyecto(\n",
+        "    5, -- p_id_entidad (verifica que exista, ej.: entidad 5)\n",
+        "    'Facultad de Ciencias de la Educación', -- p_facultad_lider\n",
+        "    'Aplicación Educativa Multiplataforma', -- p_objeto\n",
+        "    'Contrato de servicio', -- p_tipologia\n",
+        "    'Invitación directa de la fundación (convocatoria cerrada a universidades)', -- p_origen_proceso\n",
+        "    100000000, -- p_valor_cotizacion\n",
+        "    100000000, -- p_valor_proyecto_fce (valor original del contrato)\n",
+        "    '2022-03-10', -- p_fecha_recepcion propuesta\n",
+        "    '2022-03-28', -- p_fecha_entrega propuesta aprobada (adjudicación)\n",
+        "    '2022-04-15', -- p_fecha_inicio_ejecucion\n",
+        "    '2022-12-15', -- p_fecha_fin_ejecucion (fecha de finalización real en plazo)\n",
+        "    95000000, -- p_valor_pagado (valor efectivamente recibido con ahorro)\n",
+        "    'Pago por hitos contra entrega, plazo 15 días', -- p_condiciones_pago\n",
+        "    100000000, -- p_valor_contrato_total (presupuesto total aprobado inicialmente)\n",
+        "    95000000, -- p_valor_ejecucion_fce (valor efectivamente ejecutado)\n",
+        "    '05-2023', -- p_res_liquidacion_no (resolución de liquidación)\n",
+        "    '2023-01-31', -- p_fecha_liquidacion_def\n",
+        "    'Liquidado' -- p_estado_liquidacion\n",
+        ");\n"
+      ],
+      "metadata": {
+        "id": "y8bPSqJojCRp"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
         "el código incluido debajo no está testeado, presenta errores o no tiene estructura suficiente para ser util en combinación con las tablas establecidas. se utiliza solo como referencia."
       ],
       "metadata": {
         "id": "90MHAEG9MZ4f"
       }
+    },
+    {
+      "cell_type": "code",
+      "source": [],
+      "metadata": {
+        "id": "vHVrvEP4Qm65"
+      },
+      "execution_count": null,
+      "outputs": []
     },
     {
       "cell_type": "code",
@@ -739,6 +913,107 @@
       "metadata": {
         "id": "d4pJttDQAakm"
       }
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "en la sección de abajo se incluyen algunos comandos útiles para observar distintas tablas y el estado de los datos ingresados"
+      ],
+      "metadata": {
+        "id": "fUtllf6IQpzn"
+      }
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "1. Verificar inserción en base_maestra:"
+      ],
+      "metadata": {
+        "id": "8gPNvhCuQ3fn"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "SELECT *\n",
+        "FROM base_maestra\n",
+        "WHERE objeto = 'Plataforma de Telemedicina Rural';\n"
+      ],
+      "metadata": {
+        "id": "H2-0HAXiQxHN"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "2. Verificar inserción en propuestas:\n",
+        "(Reemplaza el valor del id_cid obtenido anteriormente)"
+      ],
+      "metadata": {
+        "id": "80qMXBA-Q4xC"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "SELECT p.*\n",
+        "FROM propuestas p\n",
+        "JOIN base_maestra bm ON p.id_cid = bm.id_cid\n",
+        "WHERE bm.objeto = 'Plataforma de Telemedicina Rural';"
+      ],
+      "metadata": {
+        "id": "8ZolOW50Q92_"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "3. Verificar inserción en ejecucion:"
+      ],
+      "metadata": {
+        "id": "Y5Dw8sceRAko"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "SELECT e.*\n",
+        "FROM ejecucion e\n",
+        "JOIN base_maestra bm ON e.id_cid = bm.id_cid\n",
+        "WHERE bm.objeto = 'Plataforma de Telemedicina Rural';"
+      ],
+      "metadata": {
+        "id": "sVYpnvwqRHA9"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        " 4. Verificar inserción en liquidacion:"
+      ],
+      "metadata": {
+        "id": "80jOxYsxROxc"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "SELECT l.*\n",
+        "FROM liquidacion l\n",
+        "JOIN base_maestra bm ON l.id_cid = bm.id_cid\n",
+        "WHERE bm.objeto = 'Plataforma de Telemedicina Rural';"
+      ],
+      "metadata": {
+        "id": "RifQpE1cRRZp"
+      },
+      "execution_count": null,
+      "outputs": []
     }
   ]
 }
