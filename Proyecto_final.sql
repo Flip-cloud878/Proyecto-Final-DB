@@ -4,7 +4,6 @@
   "metadata": {
     "colab": {
       "provenance": [],
-      "authorship_tag": "ABX9TyNkTDxMwkqb7YLNf1pokAbm",
       "include_colab_link": true
     },
     "kernelspec": {
@@ -30,9 +29,23 @@
       "cell_type": "code",
       "execution_count": null,
       "metadata": {
-        "id": "0OyEY0Ea_wvO"
+        "id": "0OyEY0Ea_wvO",
+        "outputId": "992a80cc-c46d-4950-a8a2-1ab43df44300",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 106
+        }
       },
-      "outputs": [],
+      "outputs": [
+        {
+          "output_type": "error",
+          "ename": "SyntaxError",
+          "evalue": "invalid syntax (<ipython-input-1-474172ff6ef7>, line 1)",
+          "traceback": [
+            "\u001b[0;36m  File \u001b[0;32m\"<ipython-input-1-474172ff6ef7>\"\u001b[0;36m, line \u001b[0;32m1\u001b[0m\n\u001b[0;31m    -- Tabla de Entidades (Entidad contratante), normalizada a partir de ID_ENTIDAD y nombre de entidad.\u001b[0m\n\u001b[0m             ^\u001b[0m\n\u001b[0;31mSyntaxError\u001b[0m\u001b[0;31m:\u001b[0m invalid syntax\n"
+          ]
+        }
+      ],
       "source": [
         "-- Tabla de Entidades (Entidad contratante), normalizada a partir de ID_ENTIDAD y nombre de entidad.\n",
         "CREATE TABLE entidad (\n",
@@ -412,8 +425,108 @@
       "outputs": []
     },
     {
+      "cell_type": "markdown",
+      "source": [
+        "Procedimientos para registrar proyectos aprobados"
+      ],
+      "metadata": {
+        "id": "lbzhoHP47JzP"
+      }
+    },
+    {
       "cell_type": "code",
-      "source": [],
+      "source": [
+        "DELIMITER $$\n",
+        "CREATE PROCEDURE crear_proyecto (\n",
+        "    IN p_id_entidad INT,\n",
+        "    IN p_facultad_lider VARCHAR(100),\n",
+        "    IN p_objeto TEXT,\n",
+        "    IN p_tipologia VARCHAR(50),\n",
+        "    IN p_origen_proceso VARCHAR(100),\n",
+        "    IN p_valor_cotizacion DECIMAL(15,2),\n",
+        "    IN p_valor_proyecto_fce DECIMAL(15,2),\n",
+        "    IN p_fecha_recepcion DATE,\n",
+        "    IN p_fecha_entrega DATE,\n",
+        "    IN p_fecha_inicio_ejecucion DATE,\n",
+        "    IN p_fecha_fin_ejecucion DATE,\n",
+        "    IN p_valor_pagado DECIMAL(15,2),\n",
+        "    IN p_condiciones_pago VARCHAR(100),\n",
+        "    IN p_valor_contrato_total DECIMAL(15,2),\n",
+        "    IN p_valor_ejecucion_fce DECIMAL(15,2),\n",
+        "    IN p_res_liquidacion_no VARCHAR(50),\n",
+        "    IN p_fecha_liquidacion_def DATE,\n",
+        "    IN p_estado_liquidacion VARCHAR(50)\n",
+        ")\n",
+        "BEGIN\n",
+        "    -- Declaración de variables locales\n",
+        "    DECLARE v_lastHermes INT DEFAULT 0;\n",
+        "    DECLARE v_lastQuipu INT DEFAULT 0;\n",
+        "    DECLARE v_newHermesCode VARCHAR(50);\n",
+        "    DECLARE v_newQuipuCode VARCHAR(50);\n",
+        "    DECLARE v_newCid INT;\n",
+        "\n",
+        "    -- Manejador de errores: ante cualquier excepción SQL, deshacer la transacción\n",
+        "    DECLARE EXIT HANDLER FOR SQLEXCEPTION\n",
+        "    BEGIN\n",
+        "        ROLLBACK;\n",
+        "        RESIGNAL;  -- Propagar el error después de rollback\n",
+        "    END;\n",
+        "\n",
+        "    START TRANSACTION;\n",
+        "    -- 1. Validar que la entidad existe\n",
+        "    IF (SELECT COUNT(*) FROM entidad WHERE id_entidad = p_id_entidad) = 0 THEN\n",
+        "        SIGNAL SQLSTATE '45000'\n",
+        "            SET MESSAGE_TEXT = 'Error: la entidad especificada (id_entidad) no existe.';\n",
+        "    END IF;\n",
+        "\n",
+        "    -- 2. Generar código HERMES (HERMES-YYYY-NNN)\n",
+        "    SELECT COALESCE(\n",
+        "               MAX(CAST(SUBSTRING_INDEX(id_hermes, '-', -1) AS UNSIGNED)),\n",
+        "               0\n",
+        "           )\n",
+        "    INTO v_lastHermes\n",
+        "    FROM base_maestra\n",
+        "    WHERE id_hermes LIKE CONCAT('HERMES-', YEAR(CURDATE()), '-%');\n",
+        "    SET v_newHermesCode = CONCAT('HERMES-', YEAR(CURDATE()), '-', LPAD(v_lastHermes + 1, 3, '0'));\n",
+        "\n",
+        "    -- 3. Generar código QUIPU (QYYYY-NNN)\n",
+        "    SELECT COALESCE(\n",
+        "               MAX(CAST(SUBSTRING_INDEX(id_quipu, '-', -1) AS UNSIGNED)),\n",
+        "               0\n",
+        "           )\n",
+        "    INTO v_lastQuipu\n",
+        "    FROM base_maestra\n",
+        "    WHERE id_quipu LIKE CONCAT('Q', YEAR(CURDATE()), '-%');\n",
+        "    SET v_newQuipuCode = CONCAT('Q', YEAR(CURDATE()), '-', LPAD(v_lastQuipu + 1, 3, '0'));\n",
+        "\n",
+        "    -- 4. Insertar en base_maestra\n",
+        "    INSERT INTO base_maestra (id_entidad, id_quipu, id_hermes, facultad_lider, objeto)\n",
+        "    VALUES (p_id_entidad, v_newQuipuCode, v_newHermesCode, p_facultad_lider, p_objeto);\n",
+        "\n",
+        "    -- Obtener el id_cid generado para el nuevo proyecto\n",
+        "    SET v_newCid = LAST_INSERT_ID();\n",
+        "\n",
+        "    -- 5. Insertar en propuestas (datos de la propuesta del proyecto)\n",
+        "    INSERT INTO propuestas (id_cid, tipologia, origen_proceso, valor_cotizacion, valor_proyecto_fce,\n",
+        "                             fecha_recepcion, fecha_entrega)\n",
+        "    VALUES (v_newCid, p_tipologia, p_origen_proceso, p_valor_cotizacion, p_valor_proyecto_fce,\n",
+        "            p_fecha_recepcion, p_fecha_entrega);\n",
+        "\n",
+        "    -- 6. Insertar en ejecucion (datos de la fase de ejecución)\n",
+        "    INSERT INTO ejecucion (id_cid, fecha_inicio_ejecucion, fecha_fin_ejecucion, valor_pagado, condiciones_pago)\n",
+        "    VALUES (v_newCid, p_fecha_inicio_ejecucion, p_fecha_fin_ejecucion, p_valor_pagado, p_condiciones_pago);\n",
+        "\n",
+        "    -- 7. Insertar en liquidacion (datos de la liquidación final)\n",
+        "    INSERT INTO liquidacion (id_cid, valor_contrato_total, valor_ejecucion_fce, res_liquidacion_no,\n",
+        "                              fecha_liquidacion_def, estado_liquidacion)\n",
+        "    VALUES (v_newCid, p_valor_contrato_total, p_valor_ejecucion_fce, p_res_liquidacion_no,\n",
+        "            p_fecha_liquidacion_def, p_estado_liquidacion);\n",
+        "\n",
+        "    -- 8. Confirmar todos los cambios\n",
+        "    COMMIT;\n",
+        "END$$\n",
+        "DELIMITER ;\n"
+      ],
       "metadata": {
         "id": "7_vgRlf-U68G"
       },
@@ -421,10 +534,199 @@
       "outputs": []
     },
     {
+      "cell_type": "markdown",
+      "source": [
+        "Este procedimiento se parametrizó con la finalidad de brindar una base para un llamado más complejo, utilizando un solo procedimiento que reciba una serie de datos compleja y que llene varias casillas de las tablas simultáneamente. A continuación se observa el llamado realizado con los datos por almacenar en un solo llamado."
+      ],
+      "metadata": {
+        "id": "H6zAQ7pXLiFW"
+      }
+    },
+    {
       "cell_type": "code",
-      "source": [],
+      "source": [
+        "CALL crear_proyecto(\n",
+        "    1, -- p_id_entidad (verifica que exista en la tabla 'entidad')\n",
+        "    'Facultad de Ingeniería Biomédica', -- p_facultad_lider\n",
+        "    'Plataforma de Telemedicina Rural', -- p_objeto\n",
+        "    'Convocatoria pública de I+D', -- p_tipologia\n",
+        "    'Licitación pública nacional (convocatoria MinSalud 2019)', -- p_origen_proceso\n",
+        "    500000000, -- p_valor_cotizacion\n",
+        "    500000000, -- p_valor_proyecto_fce (valor contrato inicial)\n",
+        "    '2019-12-20', -- p_fecha_recepcion propuesta\n",
+        "    '2020-03-10', -- p_fecha_entrega propuesta aprobada\n",
+        "    '2020-04-01', -- p_fecha_inicio_ejecucion\n",
+        "    '2021-03-31', -- p_fecha_fin_ejecucion\n",
+        "    480000000, -- p_valor_pagado (valor efectivamente pagado)\n",
+        "    'Pago contra entrega de cada módulo funcional; 30 días plazo', -- p_condiciones_pago\n",
+        "    500000000, -- p_valor_contrato_total (valor total presupuestado)\n",
+        "    480000000, -- p_valor_ejecucion_fce (valor total ejecutado)\n",
+        "    '210-2021', -- p_res_liquidacion_no (resolución de liquidación)\n",
+        "    '2021-04-30', -- p_fecha_liquidacion_def\n",
+        "    'Liquidado' -- p_estado_liquidacion\n",
+        ");\n"
+      ],
       "metadata": {
         "id": "oRGkQr5TXFeb"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "el código incluido debajo no está testeado, presenta errores o no tiene estructura suficiente para ser util en combinación con las tablas establecidas. se utiliza solo como referencia."
+      ],
+      "metadata": {
+        "id": "90MHAEG9MZ4f"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "DELIMITER $$\n",
+        "\n",
+        "-- Procedimiento 3: Insertar Proyecto 3\n",
+        "CREATE PROCEDURE InsertarProyecto3()\n",
+        "BEGIN\n",
+        "    -- Declaración de variables locales\n",
+        "    DECLARE newProjectID INT;\n",
+        "    DECLARE nuevoCodigoHermes VARCHAR(15);\n",
+        "    DECLARE nuevoCodigoQuipu VARCHAR(15);\n",
+        "\n",
+        "    -- 1. Insertar datos generales del proyecto en Base Maestra\n",
+        "    INSERT INTO base_maestra (nombre_proyecto, director, codigo_hermes, codigo_quipu)\n",
+        "    VALUES ('Desarrollo de Aplicación Móvil', 'Carlos Rodríguez', NULL, NULL);\n",
+        "    SET newProjectID = LAST_INSERT_ID();\n",
+        "\n",
+        "    -- 2. Generar códigos HERMES y QUIPU\n",
+        "    SET nuevoCodigoHermes = CONCAT('HERMES', LPAD(newProjectID, 3, '0'));\n",
+        "    SET nuevoCodigoQuipu  = CONCAT('QUIPU',  LPAD(newProjectID, 3, '0'));\n",
+        "    UPDATE base_maestra\n",
+        "    SET codigo_hermes = nuevoCodigoHermes,\n",
+        "        codigo_quipu  = nuevoCodigoQuipu\n",
+        "    WHERE id = newProjectID;\n",
+        "\n",
+        "    -- 3. Insertar datos de la propuesta (cotización y fechas)\n",
+        "    INSERT INTO propuestas (proyecto_id, valor_cotizacion, fecha_propuesta, fecha_aprobacion)\n",
+        "    VALUES (newProjectID, 120000, '2020-03-10', '2020-06-30');\n",
+        "\n",
+        "    -- 4. Insertar información de la ejecución (vigencia, pagos, fechas)\n",
+        "    INSERT INTO ejecucion (proyecto_id, vigencia, pagos, fecha_inicio, fecha_fin)\n",
+        "    VALUES (newProjectID, 2021, 4, '2021-01-05', '2021-12-31');\n",
+        "\n",
+        "    -- 5. Insertar datos de liquidación (fecha y observaciones)\n",
+        "    INSERT INTO liquidacion (proyecto_id, fecha_liquidacion, observaciones)\n",
+        "    VALUES (newProjectID, '2022-02-10', 'Proyecto liquidado sin inconvenientes.');\n",
+        "\n",
+        "    -- Mensaje de confirmación\n",
+        "    SELECT 'Proyecto \\\"Desarrollo de Aplicación Móvil\\\" insertado correctamente.' AS resultado;\n",
+        "END $$\n",
+        "\n",
+        "DELIMITER ;"
+      ],
+      "metadata": {
+        "id": "ATn92JeI7Vmw"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "DELIMITER $$\n",
+        "\n",
+        "-- Procedimiento 4: Insertar Proyecto 4\n",
+        "CREATE PROCEDURE InsertarProyecto4()\n",
+        "BEGIN\n",
+        "    -- Declaración de variables locales\n",
+        "    DECLARE newProjectID INT;\n",
+        "    DECLARE nuevoCodigoHermes VARCHAR(15);\n",
+        "    DECLARE nuevoCodigoQuipu VARCHAR(15);\n",
+        "\n",
+        "    -- 1. Insertar datos generales del proyecto en Base Maestra\n",
+        "    INSERT INTO base_maestra (nombre_proyecto, director, codigo_hermes, codigo_quipu)\n",
+        "    VALUES ('Investigación en Energías Renovables', 'Luisa Fernández', NULL, NULL);\n",
+        "    SET newProjectID = LAST_INSERT_ID();\n",
+        "\n",
+        "    -- 2. Generar códigos HERMES y QUIPU\n",
+        "    SET nuevoCodigoHermes = CONCAT('HERMES', LPAD(newProjectID, 3, '0'));\n",
+        "    SET nuevoCodigoQuipu  = CONCAT('QUIPU',  LPAD(newProjectID, 3, '0'));\n",
+        "    UPDATE base_maestra\n",
+        "    SET codigo_hermes = nuevoCodigoHermes,\n",
+        "        codigo_quipu  = nuevoCodigoQuipu\n",
+        "    WHERE id = newProjectID;\n",
+        "\n",
+        "    -- 3. Insertar datos de la propuesta (cotización y fechas)\n",
+        "    INSERT INTO propuestas (proyecto_id, valor_cotizacion, fecha_propuesta, fecha_aprobacion)\n",
+        "    VALUES (newProjectID, 30000, '2017-08-01', '2017-10-15');\n",
+        "\n",
+        "    -- 4. Insertar información de la ejecución (vigencia, pagos, fechas)\n",
+        "    INSERT INTO ejecucion (proyecto_id, vigencia, pagos, fecha_inicio, fecha_fin)\n",
+        "    VALUES (newProjectID, 2018, 2, '2018-01-10', '2018-12-10');\n",
+        "\n",
+        "    -- 5. Insertar datos de liquidación (fecha y observaciones)\n",
+        "    INSERT INTO liquidacion (proyecto_id, fecha_liquidacion, observaciones)\n",
+        "    VALUES (newProjectID, '2019-01-20', 'Cierre financiero sin pendientes.');\n",
+        "\n",
+        "    -- Mensaje de confirmación\n",
+        "    SELECT 'Proyecto \\\"Investigación en Energías Renovables\\\" insertado correctamente.' AS resultado;\n",
+        "END $$\n",
+        "\n",
+        "DELIMITER ;\n"
+      ],
+      "metadata": {
+        "id": "t2vmXLDS7VXd"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "DELIMITER $$\n",
+        "\n",
+        "-- Procedimiento 5: Insertar Proyecto 5\n",
+        "CREATE PROCEDURE InsertarProyecto5()\n",
+        "BEGIN\n",
+        "    -- Declaración de variables locales\n",
+        "    DECLARE newProjectID INT;\n",
+        "    DECLARE nuevoCodigoHermes VARCHAR(15);\n",
+        "    DECLARE nuevoCodigoQuipu VARCHAR(15);\n",
+        "\n",
+        "    -- 1. Insertar datos generales del proyecto en Base Maestra\n",
+        "    INSERT INTO base_maestra (nombre_proyecto, director, codigo_hermes, codigo_quipu)\n",
+        "    VALUES ('Proyecto de Mejora Educativa', 'Ana Martínez', NULL, NULL);\n",
+        "    SET newProjectID = LAST_INSERT_ID();\n",
+        "\n",
+        "    -- 2. Generar códigos HERMES y QUIPU\n",
+        "    SET nuevoCodigoHermes = CONCAT('HERMES', LPAD(newProjectID, 3, '0'));\n",
+        "    SET nuevoCodigoQuipu  = CONCAT('QUIPU',  LPAD(newProjectID, 3, '0'));\n",
+        "    UPDATE base_maestra\n",
+        "    SET codigo_hermes = nuevoCodigoHermes,\n",
+        "        codigo_quipu  = nuevoCodigoQuipu\n",
+        "    WHERE id = newProjectID;\n",
+        "\n",
+        "    -- 3. Insertar datos de la propuesta (cotización y fechas)\n",
+        "    INSERT INTO propuestas (proyecto_id, valor_cotizacion, fecha_propuesta, fecha_aprobacion)\n",
+        "    VALUES (newProjectID, 90000, '2021-05-20', '2021-09-01');\n",
+        "\n",
+        "    -- 4. Insertar información de la ejecución (vigencia, pagos, fechas)\n",
+        "    INSERT INTO ejecucion (proyecto_id, vigencia, pagos, fecha_inicio, fecha_fin)\n",
+        "    VALUES (newProjectID, 2022, 3, '2022-02-01', '2022-12-01');\n",
+        "\n",
+        "    -- 5. Insertar datos de liquidación (fecha y observaciones)\n",
+        "    INSERT INTO liquidacion (proyecto_id, fecha_liquidacion, observaciones)\n",
+        "    VALUES (newProjectID, '2023-01-15', 'Liquidación finalizada exitosamente.');\n",
+        "\n",
+        "    -- Mensaje de confirmación\n",
+        "    SELECT 'Proyecto \\\"Proyecto de Mejora Educativa\\\" insertado correctamente.' AS resultado;\n",
+        "END $$\n",
+        "\n",
+        "DELIMITER ;"
+      ],
+      "metadata": {
+        "id": "aJdFvAFy7VE8"
       },
       "execution_count": null,
       "outputs": []
