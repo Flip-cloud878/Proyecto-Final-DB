@@ -868,19 +868,85 @@
           "height": 106
         },
         "id": "bpw8jq1zr0Wj",
-        "outputId": "8161084b-3901-41f4-b2a1-2ad4e556d698"
+        "outputId": "44859e94-6d8c-4709-da70-6821e91dd6cb"
       },
-      "execution_count": 5,
+      "execution_count": 10,
       "outputs": [
         {
           "output_type": "error",
           "ename": "SyntaxError",
-          "evalue": "invalid syntax (<ipython-input-5-55de0ab1cc9c>, line 1)",
+          "evalue": "invalid syntax (<ipython-input-10-486b2f6bc0b3>, line 1)",
           "traceback": [
-            "\u001b[0;36m  File \u001b[0;32m\"<ipython-input-5-55de0ab1cc9c>\"\u001b[0;36m, line \u001b[0;32m1\u001b[0m\n\u001b[0;31m    -- Proyecto 1: Sistema Nacional de Información Económica\u001b[0m\n\u001b[0m                ^\u001b[0m\n\u001b[0;31mSyntaxError\u001b[0m\u001b[0;31m:\u001b[0m invalid syntax\n"
+            "\u001b[0;36m  File \u001b[0;32m\"<ipython-input-10-486b2f6bc0b3>\"\u001b[0;36m, line \u001b[0;32m1\u001b[0m\n\u001b[0;31m    -- Proyecto 1: Sistema Nacional de Información Económica\u001b[0m\n\u001b[0m                ^\u001b[0m\n\u001b[0;31mSyntaxError\u001b[0m\u001b[0;31m:\u001b[0m invalid syntax\n"
           ]
         }
       ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "siguiendo la lógica anterior se creó la siguiente tabla para el llenado de los datos que almacena los registros de otros 16 proyectos que están en etapa de ejecución y porcentajes de avance en las obras"
+      ],
+      "metadata": {
+        "id": "IaXvFfoR1sWD"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "-- Proyecto 6: Sistema Nacional de Seguridad Vial\n",
+        "CALL crear_proyecto(3,'Facultad de Ingeniería Civil','Sistema Nacional de Seguridad Vial','Consultoría técnica','Licitación pública nacional DNP-2024-09',450000000,450000000,'2024-01-15','2024-01-30','2024-01-15','2025-01-15',270000000,'Pagos trimestrales por avances aprobados',450000000,270000000,NULL,NULL,'En ejecución');\n",
+        "\n",
+        "-- Proyecto 7: Auditoría de Procesos Públicos\n",
+        "CALL crear_proyecto(4,'Facultad de Contaduría Pública','Auditoría de Procesos Públicos','Auditoría especializada','Contratación directa CGR-2023-08',150000000,150000000,'2023-05-01','2023-05-20','2023-06-01','2024-06-01',75000000,'50% inicial, 50% restante contra informes parciales aprobados',150000000,75000000,NULL,NULL,'En ejecución');\n",
+        "\n",
+        "-- Proyecto 8: Educación Financiera Digital\n",
+        "CALL crear_proyecto(2,'Facultad de Economía','Educación Financiera Digital','Desarrollo software','Convocatoria abierta MHCP-2024-01',220000000,220000000,'2024-02-15','2024-03-05','2024-03-01','2024-11-30',66000000,'Pagos trimestrales por avances aprobados',220000000,88000000,NULL,NULL,'En ejecución');\n",
+        "\n",
+        "-- Proyecto 9: Sistema Integrado de Salud Pública\n",
+        "CALL crear_proyecto(6,'Facultad de Salud Pública','Sistema Integrado de Salud Pública','Implementación tecnológica','Licitación nacional ICBF-2024-02',550000000,550000000,'2024-01-01','2024-01-20','2024-02-01','2025-01-31',220000000,'Pagos semestrales contra entregables aprobados',550000000,220000000,NULL,NULL,'En ejecución');\n",
+        "\n",
+        "-- Proyecto 10: Plataforma Nacional de Innovación Digital\n",
+        "CALL crear_proyecto(1,'Facultad de Ingeniería de Sistemas','Plataforma Nacional de Innovación Digital','Implementación tecnológica','Convocatoria presidencial CPU-2024-02',800000000,800000000,'2024-02-01','2024-02-28','2024-03-10','2025-03-09',200000000,'Pagos por entregables aprobados, plazo 30 días',800000000,200000000,NULL,NULL,'En ejecución');\n",
+        "\n",
+        "-- Proyecto 11: Sistema de Transparencia Pública\n",
+        "CALL crear_proyecto(4,'Facultad de Derecho','Sistema de Transparencia Pública','Consultoría','Licitación pública nacional CGR-2024-11',400000000,400000000,'2024-03-15','2024-04-01','2024-04-15','2025-04-14',160000000,'Pagos trimestrales contra entregas parciales aprobadas',400000000,160000000,NULL,NULL,'En ejecución');\n",
+        "\n",
+        "-- Proyecto 12: Programa Nacional de Innovación Empresarial\n",
+        "CALL crear_proyecto(2,'Facultad de Administración','Programa Nacional de Innovación Empresarial','Investigación aplicada','Convocatoria MHCP-2024-06',600000000,600000000,'2024-05-01','2024-05-20','2024-06-01','2025-05-31',90000000,'Pagos trimestrales por avances',600000000,90000000,NULL,NULL,'En ejecución');\n",
+        "\n",
+        "-- Proyecto 13: Plataforma de Monitoreo Económico\n",
+        "CALL crear_proyecto(2,'Facultad de Economía','Plataforma de Monitoreo Económico','Desarrollo software','Licitación pública nacional MHCP-2024-04',350000000,350000000,'2024-03-01','2024-03-20','2024-04-01','2025-03-31',105000000,'Pagos trimestrales por avance',350000000,105000000,NULL,NULL,'En ejecución');\n",
+        "\n",
+        "-- Proyecto 14: Campaña Nacional de Prevención de Corrupción\n",
+        "CALL crear_proyecto(4,'Facultad de Ciencias Sociales','Campaña Nacional de Prevención de Corrupción','Campaña de sensibilización','Contratación directa CGR-2024-01',250000000,250000000,'2024-01-05','2024-01-20','2024-02-01','2024-12-31',125000000,'Pagos bimestrales por avance aprobado',250000000,125000000,NULL,NULL,'En ejecución');\n",
+        "\n",
+        "-- Proyecto 15: Sistema Inteligente de Auditoría\n",
+        "CALL crear_proyecto(4,'Facultad de Ingeniería de Sistemas','Sistema Inteligencia Artificial Auditoría Fiscal','Implementación tecnológica','Licitación CGR-2024-05',850000000,850000000,'2024-04-10','2024-04-30','2024-05-15','2025-05-14',212500000,'Pagos trimestrales',850000000,212500000,NULL,NULL,'En ejecución');\n",
+        "\n",
+        "-- Proyecto 16: Plataforma Digital Educativa Juvenil\n",
+        "CALL crear_proyecto(6,'Facultad de Educación','Plataforma de Educación Financiera Juvenil','Software educativo móvil','Convocatoria pública ICBF-2024-04',280000000,280000000,'2024-03-15','2024-03-30','2024-04-01','2024-12-31',98000000,'Pagos trimestrales',280000000,98000000,NULL,NULL,'En ejecución');\n",
+        "\n",
+        "-- Proyecto 16: Implementación Blockchain para Contratos Públicos\n",
+        "CALL crear_proyecto(5,'Facultad de Ingeniería de Sistemas','Implementación Blockchain para Contratos Públicos','Tecnología Blockchain','Convocatoria abierta SIC-2024-15',700000000,700000000,'2024-03-01','2024-03-25','2024-04-01','2025-04-01',210000000,'Pagos trimestrales contra entregables aprobados',700000000,210000000,NULL,NULL,'En ejecución');\n",
+        "\n",
+        "-- Proyecto 17: Sistema de Gestión Territorial\n",
+        "CALL crear_proyecto(3,'Facultad de Geografía','Sistema de Gestión Territorial','Desarrollo GIS','Licitación regional DNP-2024-11',400000000,400000000,'2024-02-20','2024-03-15','2024-04-01','2025-03-31',80000000,'Pagos trimestrales por avances aprobados',400000000,80000000,NULL,NULL,'En ejecución');\n",
+        "\n",
+        "-- Proyecto 18: Sistema Nacional de Control de Medicamentos\n",
+        "CALL crear_proyecto(6,'Facultad de Salud Pública','Sistema Nacional de Monitoreo Farmacéutico','Implementación tecnológica','Convocatoria pública nacional ICBF-2024-06',550000000,550000000,'2024-02-01','2024-02-20','2024-03-05','2025-03-04',110000000,'Pagos trimestrales contra entregas parciales aprobadas',550000000,110000000,NULL,NULL,'En ejecución');\n",
+        "\n",
+        "-- Proyecto 19: Observatorio Nacional de Planeación Urbana\n",
+        "CALL crear_proyecto(3,'Facultad de Arquitectura y Urbanismo','Sistema de Información Territorial','Software de planificación urbana','Licitación pública nacional DNP-2024-12',450000000,450000000,'2024-03-01','2024-03-25','2024-04-10','2025-04-09',90000000,'Pagos trimestrales, plazo 30 días contra entregables',450000000,90000000,NULL,NULL,'En ejecución');\n",
+        "\n",
+        "-- Proyecto 20: Programa Nacional de Emprendimiento Juvenil\n",
+        "CALL crear_proyecto(3,'Facultad de Ciencias Económicas','Programa Nacional de Emprendimiento Juvenil','Programa de formación','Convocatoria pública DNP-2024-03',300000000,300000000,'2024-02-20','2024-03-05','2024-03-20','2025-03-19',60000000,'Pagos por etapas de formación concluidas, plazo 30 días',300000000,60000000,NULL,NULL,'En ejecución');\n"
+      ],
+      "metadata": {
+        "id": "c0G_B5Ry1vtJ"
+      },
+      "execution_count": null,
+      "outputs": []
     },
     {
       "cell_type": "markdown",
